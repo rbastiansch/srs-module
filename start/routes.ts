@@ -23,3 +23,7 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async () => {
   return { hello: 'worldd' }
 })
+
+Route.get('/sentences', 'SentencesController.index')
+Route.post('/sentences', 'SentencesController.store')
+Route.patch('/sentences/:id', 'SentencesController.update')
