@@ -24,6 +24,8 @@ Route.get('/', async () => {
   return { hello: 'worldd' }
 })
 
-Route.get('/sentences', 'SentencesController.index')
-Route.post('/sentences', 'SentencesController.store')
-Route.patch('/sentences/:id', 'SentencesController.update')
+Route.group(() => {
+  Route.get('', 'SentencesController.index')
+  Route.post('', 'SentencesController.store')
+  Route.patch('/:id', 'SentencesController.update')
+}).prefix('sentences')

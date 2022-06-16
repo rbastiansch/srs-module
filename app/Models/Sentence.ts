@@ -13,4 +13,10 @@ export default class Sentence extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @column.dateTime({ autoCreate: false, autoUpdate: false })
+  public timeToRepeat: DateTime
+
+  @column()
+  public lastLearningDays: number
 }
