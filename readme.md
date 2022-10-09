@@ -7,7 +7,7 @@
 
 
 ## How to debug
-# On VSCode add this to your launch.json config file, it will attach your already running docker container
+### On VSCode add this to your launch.json config file, it will attach your already running docker container
  ```
  {
   "version": "0.2.0",
