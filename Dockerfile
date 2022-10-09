@@ -4,7 +4,7 @@ FROM node:16-alpine
 WORKDIR /usr/app
 
 COPY package*.json ./
-COPY .env.example .env
+COPY .env.local .env
 
 USER root
 

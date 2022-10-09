@@ -5,7 +5,6 @@
 `docker exec -it srs-api node ace migration:run`
 `docker-compose up`
 
-
 ## How to debug
 ### On VSCode add this to your launch.json config file, it will attach your already running docker container
  ```
@@ -21,3 +20,7 @@
   ]
 }
 ```
+
+
+## How to run tests
+`docker exec -it srs-api node ace test`
