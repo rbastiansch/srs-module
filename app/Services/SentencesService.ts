@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import { DateTime } from 'luxon'
 
 interface LastLearningDaysPayload {
   lastLearningDays: number
@@ -37,19 +37,17 @@ export default class SentencesService {
     return updatedlastLearningDays
   }
 
-  public getTimeToRepeat(payload: TimeToRepeatPayload): string {
+  public getTimeToRepeat(payload: TimeToRepeatPayload): DateTime {
     const { timeToRepeat, learning, lastLearningDays, daysToAdd } = payload
-    let updatedTimeToRepeat = dayjs().toISOString()
+    let updatedTimeToRepeat = DateTime.now()
     if (!learning) {
       return updatedTimeToRepeat
     }
 
     updatedTimeToRepeat =
       learning === 'wrong'
-        ? dayjs(timeToRepeat).add(daysToAdd, 'minute').toISOString()
-        : dayjs(timeToRepeat)
-            .add(lastLearningDays || daysToAdd, 'day')
-            .toISOString()
+        ? DateTime.fromISO(timeToRepeat).plus({ minutes: daysToAdd })
+        : DateTime.fromISO(timeToRepeat).plus({ days: lastLearningDays || daysToAdd })
 
     return updatedTimeToRepeat
   }

@@ -1,12 +1,12 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
-const dayjs = require('dayjs')
+import { DateTime } from 'luxon'
 
 export default class Sentences extends BaseSchema {
   protected tableName = 'sentences'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      const now = dayjs().toISOString()
+      const now = DateTime.now()
       table.increments('id')
       table.text('text').notNullable()
       table.timestamp('created_at').defaultTo(now)

@@ -1,6 +1,6 @@
 import Sentence from 'App/Models/Sentence'
 import Service from 'App/Services/SentencesService'
-import dayjs from 'dayjs'
+import { DateTime } from 'luxon'
 
 interface SaveSentencePayload {
   text: string
@@ -44,7 +44,7 @@ export default class SentencesController {
   private async saveSentenceBasedOnDate(payload: SaveSentencePayload) {
     return {
       ...payload,
-      timeToRepeat: dayjs().toISOString(),
+      timeToRepeat: DateTime.now(),
     }
   }
 
