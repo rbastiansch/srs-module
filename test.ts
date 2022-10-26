@@ -19,6 +19,7 @@ import sourceMapSupport from 'source-map-support'
 import { Ignitor } from '@adonisjs/core/build/standalone'
 import { configure, processCliArgs, run, RunnerHooksHandler } from '@japa/runner'
 import { expect } from '@japa/expect'
+import { runFailedTests } from '@japa/run-failed-tests'
 
 sourceMapSupport.install({ handleUncaughtExceptions: false })
 
@@ -40,7 +41,7 @@ kernel
         teardown: runnerHooks.teardown,
       },
       cwd: kernel.application.appRoot,
-      plugins: [expect()],
+      plugins: [expect(), runFailedTests()],
     })
 
     run()
