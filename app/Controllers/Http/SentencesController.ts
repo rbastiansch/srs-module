@@ -4,11 +4,11 @@ import { DateTime } from 'luxon'
 
 interface SaveSentencePayload {
   text: string
-  timeToRepeat: string
+  timeToRepeat: DateTime
 }
 
 interface UpdateSentencePayload extends SaveSentencePayload {
-  learning?: string
+  learning: string
   lastLearningDays: number
 }
 
@@ -49,24 +49,20 @@ export default class SentencesController {
   }
 
   private async updateSentenceBasedOnDate(payload: UpdateSentencePayload) {
-    const { timeToRepeat, learning, lastLearningDays } = payload
+    // const { timeToRepeat, learning, lastLearningDays } = payload
 
-    const lastLearningDaysNew = new Service().getLastLearningDays({ lastLearningDays, learning })
-    const timeToRepeatNew = new Service().getTimeToRepeat({
-      timeToRepeat,
-      learning,
-      daysToAdd: 1,
-      lastLearningDays: lastLearningDaysNew,
-    })
+    const calculatedTimeToRepeat = new Service().calculateTimeToRepeat(payload)
 
-    if (learning) {
-      delete payload.learning
-    }
+    // const lastLearningDaysNew = new Service().getLastLearningDays({ lastLearningDays, learning })
+
+    // if (learning) {
+    //   delete payload.learning
+    // }
 
     return {
       ...payload,
-      timeToRepeat: timeToRepeatNew,
-      lastLearningDays: lastLearningDaysNew,
+      timeToRepeat: calculatedTimeToRepeat,
+      // lastLearningDays: lastLearningDaysNew,
     }
   }
 }
