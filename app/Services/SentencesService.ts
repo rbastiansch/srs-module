@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon'
+import { SentenceLearningLevel } from 'App/Enums/sentences.enum'
 
 interface LastLearningDaysPayload {
   lastLearningDays: number
@@ -22,27 +23,18 @@ interface SentencePayload {
 export default class SentencesService {
   public calculateTimeToRepeat(payload: SentencePayload): DateTime {
     const { timeToRepeat, learning, lastLearningDays } = payload
-    if (learning === 'wrong') {
-      return DateTime.now().plus({ minutes: 10 })
+    const { WRONG, HARD, GOOD, EASY } = SentenceLearningLevel
+
+    const calculateConfig = {
+      [WRONG]: () => ({ minutes: 10 }),
+      [HARD]: () => ({ days: this.calculateDaysToSum(lastLearningDays) }),
+      [GOOD]: () => ({ days: this.calculateDaysToSum(lastLearningDays, 2) }),
+      [EASY]: () => ({ days: this.calculateDaysToSum(lastLearningDays, 2.5) }),
     }
 
-    if (learning === 'hard') {
-      const daysToSum = lastLearningDays || 1
-      return DateTime.now().plus({ days: daysToSum })
-    }
+    const matchedLearning = calculateConfig[learning]
 
-    if (learning === 'good') {
-      const daysToSum = lastLearningDays || 1
-      return DateTime.now().plus({ days: daysToSum * 2 })
-    }
-
-    if (learning === 'easy') {
-      const daysToSum = lastLearningDays || 1
-      const roundedDays = Math.ceil(daysToSum * 2.5)
-      return DateTime.now().plus({ days: roundedDays })
-    }
-
-    return timeToRepeat
+    return matchedLearning ? DateTime.now().plus(matchedLearning()) : timeToRepeat
   }
 
   public getLastLearningDays(payload: LastLearningDaysPayload): number {
@@ -69,18 +61,12 @@ export default class SentencesService {
     return updatedlastLearningDays
   }
 
-  public getTimeToRepeat(payload: TimeToRepeatPayload): DateTime {
-    const { timeToRepeat, learning, lastLearningDays, daysToAdd } = payload
-    let updatedTimeToRepeat = DateTime.now()
-    if (!learning) {
-      return updatedTimeToRepeat
+  private calculateDaysToSum(lastLearningDays: number | null, timesToCalculate?: number): number {
+    const daysToSum = lastLearningDays || 1
+    if (!timesToCalculate) {
+      return daysToSum
     }
 
-    updatedTimeToRepeat =
-      learning === 'wrong'
-        ? DateTime.fromISO(timeToRepeat).plus({ minutes: daysToAdd })
-        : DateTime.fromISO(timeToRepeat).plus({ days: lastLearningDays || daysToAdd })
-
-    return updatedTimeToRepeat
+    return Math.ceil(daysToSum * timesToCalculate)
   }
 }
