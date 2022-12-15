@@ -37,28 +37,11 @@ export default class SentencesService {
     return matchedLearning ? DateTime.now().plus(matchedLearning()) : timeToRepeat
   }
 
-  public getLastLearningDays(payload: LastLearningDaysPayload): number {
-    const { lastLearningDays, learning } = payload
-    const learningMinutes = {
-      wrong: 10, // 10 minutes = 0,00694444
-      hard: 1, // 1 day
-      normal: 4, // 4 days
-      easy: 7, // 7 days
-    }
+  public calculateRoundedDiffDaysFromNow(timeToRepeat: DateTime): number {
+    const current = DateTime.now()
+    const diffDays = timeToRepeat.diff(current, 'days')
 
-    if (!learning) {
-      return lastLearningDays
-    }
-
-    let updatedlastLearningDays = lastLearningDays
-    const daysToAdd = learningMinutes[learning]
-
-    if (learning !== 'wrong') {
-      updatedlastLearningDays =
-        updatedlastLearningDays && learning === 'easy' ? updatedlastLearningDays * 2 : daysToAdd
-    }
-
-    return updatedlastLearningDays
+    return Math.round(diffDays.toObject().days || 0)
   }
 
   private calculateDaysToSum(lastLearningDays: number | null, timesToCalculate?: number): number {

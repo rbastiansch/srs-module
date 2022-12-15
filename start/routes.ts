@@ -28,4 +28,5 @@ Route.group(() => {
   Route.get('', 'SentencesController.index')
   Route.post('', 'SentencesController.store')
   Route.patch('/:id', 'SentencesController.update')
+  Route.get('/delayed', 'SentencesController.getDelayedSentences')
 }).prefix('sentences')

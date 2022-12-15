@@ -41,6 +41,10 @@ export default class SentencesController {
     response.send(result)
   }
 
+  public async getDelayedSentences() {
+    return await Sentence.query().where('timeToRepeat', '<', DateTime.now().toISO())
+  }
+
   private async saveSentenceBasedOnDate(payload: SaveSentencePayload) {
     return {
       ...payload,
@@ -49,20 +53,14 @@ export default class SentencesController {
   }
 
   private async updateSentenceBasedOnDate(payload: UpdateSentencePayload) {
-    // const { timeToRepeat, learning, lastLearningDays } = payload
-
+    const { learning, ...payloadCopy } = payload
     const calculatedTimeToRepeat = new Service().calculateTimeToRepeat(payload)
-
-    // const lastLearningDaysNew = new Service().getLastLearningDays({ lastLearningDays, learning })
-
-    // if (learning) {
-    //   delete payload.learning
-    // }
+    const lastLearningDays = new Service().calculateRoundedDiffDaysFromNow(calculatedTimeToRepeat)
 
     return {
-      ...payload,
+      ...payloadCopy,
       timeToRepeat: calculatedTimeToRepeat,
-      // lastLearningDays: lastLearningDaysNew,
+      lastLearningDays,
     }
   }
 }
