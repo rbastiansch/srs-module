@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import User from 'App/Models/User'
 
 Route.get('/', async () => {
   return { hello: 'worldd' }
@@ -29,4 +30,22 @@ Route.group(() => {
   Route.post('', 'SentencesController.store')
   Route.patch('/:id', 'SentencesController.update')
   Route.get('/delayed', 'SentencesController.getDelayedSentences')
-}).prefix('sentences')
+})
+  .prefix('sentences')
+  .middleware('auth')
+
+Route.group(() => {
+  Route.post('/login', async ({ auth, request }) => {
+    const email = request.input('email')
+    const password = request.input('password')
+
+    return await auth.use('api').attempt(email, password)
+  })
+
+  Route.post('/signup', async ({ request }) => {
+    const email = request.input('email')
+    const password = request.input('password')
+
+    return await new User().fill({ email, password }).save()
+  })
+}).prefix('auth')
