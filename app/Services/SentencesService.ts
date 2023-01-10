@@ -1,18 +1,6 @@
 import { DateTime } from 'luxon'
 import { SentenceLearningLevel } from 'App/Enums/sentences.enum'
 
-interface LastLearningDaysPayload {
-  lastLearningDays: number
-  learning?: string
-}
-
-interface TimeToRepeatPayload {
-  timeToRepeat: string
-  learning?: string
-  lastLearningDays: number | null
-  daysToAdd: number
-}
-
 interface SentencePayload {
   lastLearningDays: number | null
   learning: string
@@ -29,7 +17,7 @@ export default class SentencesService {
       [WRONG]: () => ({ minutes: 10 }),
       [HARD]: () => ({ days: this.calculateDaysToSum(lastLearningDays) }),
       [GOOD]: () => ({ days: this.calculateDaysToSum(lastLearningDays, 2) }),
-      [EASY]: () => ({ days: this.calculateDaysToSum(lastLearningDays, 2.5) }),
+      [EASY]: () => ({ days: this.calculateDaysToSum(lastLearningDays, 2.5) })
     }
 
     const matchedLearning = calculateConfig[learning]
