@@ -8,8 +8,38 @@ interface SentencePayload {
   timeToRepeat: DateTime
 }
 
+interface SaveSentencePayload {
+  text: string
+  user_id: string
+  timeToRepeat: DateTime
+}
+
+interface UpdateSentencePayload extends SaveSentencePayload {
+  learning: string
+  lastLearningDays: number
+}
+
 export default class SentencesService {
-  public calculateTimeToRepeat(payload: SentencePayload): DateTime {
+  public addSentenceCurrentTimeToRepeat(payload: SaveSentencePayload) {
+    return {
+      ...payload,
+      timeToRepeat: DateTime.now()
+    }
+  }
+
+  public updateSentenceBasedOnDate(payload: UpdateSentencePayload) {
+    const { learning, ...payloadCopy } = payload
+    const calculatedTimeToRepeat = this.calculateTimeToRepeat(payload)
+    const lastLearningDays = this.calculateRoundedDiffDaysFromNow(calculatedTimeToRepeat)
+
+    return {
+      ...payloadCopy,
+      timeToRepeat: calculatedTimeToRepeat,
+      lastLearningDays
+    }
+  }
+
+  private calculateTimeToRepeat(payload: SentencePayload): DateTime {
     const { timeToRepeat, learning, lastLearningDays } = payload
     const { WRONG, HARD, GOOD, EASY } = SentenceLearningLevel
 
@@ -25,7 +55,7 @@ export default class SentencesService {
     return matchedLearning ? DateTime.now().plus(matchedLearning()) : timeToRepeat
   }
 
-  public calculateRoundedDiffDaysFromNow(timeToRepeat: DateTime): number {
+  private calculateRoundedDiffDaysFromNow(timeToRepeat: DateTime): number {
     const current = DateTime.now()
     const diffDays = timeToRepeat.diff(current, 'days')
 
