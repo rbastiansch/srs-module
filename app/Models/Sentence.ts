@@ -1,9 +1,19 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, belongsTo, BelongsTo, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { v4 as uuidv4 } from 'uuid'
+import User from 'App/Models/User'
 
 export default class Sentence extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: string
+
+  @column()
+  public userId: string
+
+  @belongsTo(() => User, {
+    foreignKey: 'user_id'
+  })
+  public user: BelongsTo<typeof User>
 
   @column()
   public text: string
@@ -19,4 +29,9 @@ export default class Sentence extends BaseModel {
 
   @column()
   public lastLearningDays: number
+
+  @beforeCreate()
+  public static assignUuid(sentence: Sentence) {
+    sentence.id = uuidv4()
+  }
 }

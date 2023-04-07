@@ -4,6 +4,7 @@ import { DateTime } from 'luxon'
 
 interface SaveSentencePayload {
   text: string
+  user_id: string
   timeToRepeat: DateTime
 }
 
@@ -20,9 +21,9 @@ export default class SentencesController {
   public async store({ request, response }) {
     const sentence = new Sentence()
 
-    const timeToRepeat = await this.saveSentenceBasedOnDate(request.all())
+    const sentenceWithTimeToRepeat = await this.addSentenceTimeToRepeat(request.all())
 
-    const result = await sentence.fill({ ...timeToRepeat }).save()
+    const result = await sentence.fill({ ...sentenceWithTimeToRepeat }).save()
 
     response.send(result)
   }
@@ -31,13 +32,13 @@ export default class SentencesController {
     const { id } = request.params()
 
     const sentence = await Sentence.findOrFail(id)
-    const timeToRepeat = await this.updateSentenceBasedOnDate({
+    const updatedSentence = await this.updateSentenceBasedOnDate({
       ...request.all(),
       timeToRepeat: sentence.timeToRepeat,
-      lastLearningDays: sentence.lastLearningDays,
+      lastLearningDays: sentence.lastLearningDays
     })
 
-    const result = await sentence.merge({ ...timeToRepeat }).save()
+    const result = await sentence.merge({ ...updatedSentence }).save()
     response.send(result)
   }
 
@@ -45,10 +46,10 @@ export default class SentencesController {
     return await Sentence.query().where('timeToRepeat', '<', DateTime.now().toISO())
   }
 
-  private async saveSentenceBasedOnDate(payload: SaveSentencePayload) {
+  private async addSentenceTimeToRepeat(payload: SaveSentencePayload) {
     return {
       ...payload,
-      timeToRepeat: DateTime.now(),
+      timeToRepeat: DateTime.now()
     }
   }
 
@@ -60,7 +61,7 @@ export default class SentencesController {
     return {
       ...payloadCopy,
       timeToRepeat: calculatedTimeToRepeat,
-      lastLearningDays,
+      lastLearningDays
     }
   }
 }

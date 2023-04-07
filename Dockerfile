@@ -1,5 +1,5 @@
 # We'll use the Node slim image as a base cos it's light and nice
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /usr/app
 
